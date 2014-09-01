@@ -1,0 +1,20 @@
+<p id="notice"><%= notice %></p>
+Current receipts:
+<% @group.receipts.each do |r| %>
+  <%= link_to r.title, group_receipt_path(params[:id],r.id) %>
+<% end %>
+
+Group total:
+<%= @group.balance %>
+
+<ul>
+<% @memberships.each do |m| %>
+  <li><%= User.find(m.user_id).name %>'s balance: <%= m.balance %></li>
+<% end %>
+</ul>
+
+Add new receipt:
+<%= link_to 'New Receipt', new_group_receipt_path(params[:id]) %>
+
+<%= link_to 'Edit', edit_group_path(@group) %> |
+<%= link_to 'Back', groups_path %>

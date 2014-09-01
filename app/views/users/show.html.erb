@@ -1,0 +1,9 @@
+<p id="notice"><%= notice %></p>
+  <h1>Welcome, <%= current_user.name%></h1>
+  <p> Your groups: 
+    <% current_user.groups.each do |g| %>
+    <%= link_to g.name, group_path(g.id) %>
+    <% end %>
+
+<%= link_to 'Edit', edit_user_path(@user) %> |
+<%= link_to 'Back', users_path %>
