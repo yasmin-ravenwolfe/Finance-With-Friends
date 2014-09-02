@@ -1,39 +1,20 @@
 FinanceWithFriends::Application.routes.draw do
   devise_for :users
-  # get "memberships/index"
-  # get "memberships/new"
-  # get "memberships/create"
-  # get "memberships/show"
-  # get "memberships/edit"
-  # get "memberships/update"
-  # get "memberships/destroy"
-  # get "users/index"
-  # get "users/new"
-  # get "users/create"
-  # get "users/show"
-  # get "users/edit"
-  # get "users/update"
-  # get "users/destroy"
-  # get "user/index"
-  # get "user/new"
-  # get "user/create"
-  # get "user/show"
-  # get "user/edit"
-  # get "user/update"
-  # get "user/destroy"
+
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
   root :to => "users#show"
-  resources :users 
+  resources :users
   # resources :memberships
-  resources :groups do 
-      resources :categories, shallow: true
-      resources :receipts
+  resources :groups, shallow: true do 
+    resources :categories
+    resources :receipts, shallow: true do 
+      resources :purchases, shallow: true do
+        resources :splits
+      end
+    end
   end
-  
-  resources :purchases do 
-    resources :splits
-  end
+
  
   
   # You can have the root of your site routed with "root"

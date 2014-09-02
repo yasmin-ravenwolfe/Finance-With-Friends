@@ -1,4 +1,13 @@
-<%= form_for(@receipt) do |f| %>
+<%= form_for [@group, @receipt] do |f| %>
+  <%= f.label :date, "Date: "%>
+  <%= f.date_select(:date, order: [:month, :day, :year]) %>
+
+  <%= f.label :title, "Title: " %>
+  <%= f.text_field :title %>
+
+  <%= f.label :location, "Location: " %>
+  <%= f.text_field :location %>
+
   <% if @receipt.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@receipt.errors.count, "error") %> prohibited this receipt from being saved:</h2>

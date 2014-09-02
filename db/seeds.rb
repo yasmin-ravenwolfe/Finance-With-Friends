@@ -13,7 +13,7 @@ y_group = Group.create(name: "Yasmin's Group", balance: 0)
 health = y_group.categories.create(title: "Health")
 
 yf_group = Group.create(name: "Yasmin-Frank Group", balance: 0)
-groceries = y_group.categories.create(title: "Groceries")
+groceries = yf_group.categories.create(title: "Groceries")
 
 # Create a membership for user Yasmin, group Yasmin
 yasmin_y_group_mem = y_group.memberships.create(user_id: yasmin.id)

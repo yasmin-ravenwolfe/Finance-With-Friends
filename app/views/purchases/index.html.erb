@@ -12,9 +12,13 @@
   <tbody>
     <% @purchases.each do |purchase| %>
       <tr>
-        <td><%= link_to 'Show', purchase %></td>
-        <td><%= link_to 'Edit', edit_purchase_path(purchase) %></td>
-        <td><%= link_to 'Destroy', purchase, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <td><%= purchase.description %></td>
+        <td><%#= link_to 'Show', purchase %></td>
+        <td><%#= link_to 'Edit', edit_purchase_path(purchase) %></td>
+        <td><%#= link_to 'Destroy', purchase, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+        <% if purchase.split %>
+          <td><%= link_to 'Split', new_purchase_split_path(purchase) %></td>
+        <% end %>
       </tr>
     <% end %>
   </tbody>
@@ -22,4 +26,4 @@
 
 <br>
 
-<%= link_to 'New Purchase', new_purchase_path %>
+<%= link_to 'New Purchase', new_receipt_purchase_path(@receipt) %>

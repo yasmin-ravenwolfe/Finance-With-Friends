@@ -15,6 +15,8 @@ class SplitsController < ApplicationController
   # GET /splits/new
   def new
     @split = Split.new
+    @purchase = Purchase.find params[:purchase_id]
+    @memberships = @purchase.receipt.group.memberships
   end
 
   # GET /splits/1/edit
@@ -24,11 +26,15 @@ class SplitsController < ApplicationController
   # POST /splits
   # POST /splits.json
   def create
-    @split = Split.new(split_params)
+    @purchase = Purchase.find params[:purchase_id]
+    @receipt = @purchase.receipt
+    @split = @purchase.splits.new(split_params)
+    @split.membership_id = params[:split][:membership_id]
+    @split.percentage = params[:split][:percentage]
 
     respond_to do |format|
       if @split.save
-        format.html { redirect_to @split, notice: 'Split was successfully created.' }
+        format.html { redirect_to receipt_purchases_path(@receipt), notice: 'Split was successfully created.' }
         format.json { render action: 'show', status: :created, location: @split }
       else
         format.html { render action: 'new' }
@@ -69,6 +75,6 @@ class SplitsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def split_params
-      params[:split]
+      params.require(:split).permit(:purchase_id, split: [:membership_id, :percentage])
     end
 end

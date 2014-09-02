@@ -4,7 +4,8 @@ class PurchasesController < ApplicationController
   # GET /purchases
   # GET /purchases.json
   def index
-    @purchases = Purchase.all
+    @receipt = Receipt.find params[:receipt_id]
+    @purchases = @receipt.purchases
   end
 
   # GET /purchases/1
@@ -15,6 +16,9 @@ class PurchasesController < ApplicationController
   # GET /purchases/new
   def new
     @purchase = Purchase.new
+    @receipt = Receipt.find params[:receipt_id]
+    @group = @receipt.group
+    @categories = @group.categories
   end
 
   # GET /purchases/1/edit
@@ -24,11 +28,25 @@ class PurchasesController < ApplicationController
   # POST /purchases
   # POST /purchases.json
   def create
-    @purchase = Purchase.new(purchase_params)
+    @receipt = Receipt.find params[:receipt_id]
+    @purchase = @receipt.purchases.new(purchase_params)
+    # ytf TODO: Create purchase through receipt or independently, passing in receipt_id from params?
+    # @purchase.receipt_id = params[:receipt_id]
+    @purchase.description = params[:purchase][:description]
+    @purchase.category_id = params[:purchase][:category_id]
+    @purchase.price = params[:purchase][:price]
+    @purchase.quantity = params[:purchase][:quantity]
+    @purchase.tax = params[:purchase][:tax].to_d
+    if params[:purchase][:split] == "1" 
+      @purchase.split = true
+    else
+     @purchase.split = false
+    end
+       
 
     respond_to do |format|
       if @purchase.save
-        format.html { redirect_to @purchase, notice: 'Purchase was successfully created.' }
+        format.html { redirect_to receipt_purchases_path(@receipt), notice: 'Purchase was successfully created.' }
         format.json { render action: 'show', status: :created, location: @purchase }
       else
         format.html { render action: 'new' }
@@ -69,6 +87,6 @@ class PurchasesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def purchase_params
-      params[:purchase]
+      params.require(:purchase).permit(:receipt_id, purchase: [:description, :category_id, :price, :quantity, :tax, :split] )
     end
 end

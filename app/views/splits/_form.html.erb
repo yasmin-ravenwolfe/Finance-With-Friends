@@ -1,4 +1,11 @@
-<%= form_for(@split) do |f| %>
+<%= form_for [@purchase, @split] do |f| %>
+
+<%= f.label :membership_id, "Buyer: " %>
+<%= f.select :membership_id, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] }  %>
+
+<%= f.label :percentage, "Percentage: " %>
+<%= f.text_field :percentage %>
+
   <% if @split.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@split.errors.count, "error") %> prohibited this split from being saved:</h2>
