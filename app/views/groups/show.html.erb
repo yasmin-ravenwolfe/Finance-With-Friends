@@ -1,15 +1,15 @@
-<p id="notice"><%= notice %></p>
+<!-- <p id="notice"><%= notice %></p>
 Add new receipt:
-<%= link_to 'New Receipt', new_group_receipt_path(params[:id]) %>
+<%#= link_to 'New Receipt', new_group_receipt_path(params[:id]) %>
 
 <p>Group total:
 <%= @group.balance %>
 </p>
 
 <ul>
-<% @memberships.each do |m| %>
-  <li><%= User.find(m.user_id).name %>'s balance: <%= m.balance %></li>
-<% end %>
+<%# @memberships.each do |m| %>
+  <li><%#= User.find(m.user_id).name %>'s balance: <%#= m.balance %></li>
+<%# end %>
 </ul>
 
 <p>Most recent receipt:
@@ -17,9 +17,10 @@ Add new receipt:
 </p>
 
 <p> 
-  <%= link_to 'See all receipts', group_receipts_path(params[:id]) %>
-</p>
+  <%#= link_to 'See all receipts', group_receipts_path(params[:id]) %>
+</p> -->
 
+Put category info per group here 
 
 <%= link_to 'Edit', edit_group_path(@group) %> |
 <%= link_to 'Back', groups_path %>

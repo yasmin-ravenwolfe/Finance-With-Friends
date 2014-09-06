@@ -1,3 +1,4 @@
+<%= javascript_include_tag "receipts" %>
 <h1>Listing receipts</h1>
 
 <table>
@@ -8,17 +9,22 @@
       <th></th>
     </tr>
   </thead>
-
-  <tbody>
-    <% @receipts.each do |receipt| %>
-      <tr>
-        <td><%= link_to 'Show', receipt %></td>
-        <td><%= link_to 'Edit', edit_receipt_path(receipt) %></td>
-        <td><%= link_to 'Destroy', receipt, method: :delete, data: { confirm: 'Are you sure?' } %></td>
-      </tr>
-    <% end %>
-  </tbody>
 </table>
+  
+    <% @receipts.each do |receipt| %>
+      
+        <% receipt.purchases.each do |p| %>
+        <div><%= link_to receipt.title, "#", class: "receipt-list-item" %>
+          <ul style='display:none;' >
+            <li id='list-items'><%= p.description %></li>
+          </ul>
+            <% end %>
+          </div>
+        <%#= link_to 'Edit', edit_receipt_path(receipt) %>
+        <%#= link_to 'Destroy', receipt, method: :delete, data: { confirm: 'Are you sure?' } %>
+      
+    <% end %>
+
 
 <br>
 <%= link_to 'New Receipt', new_group_receipt_path(params[:group_id]) %>
