@@ -1,6 +1,20 @@
 <h1>Editing split</h1>
 
-<%= render 'form' %>
+<h3><%= @purchase.description %>: $<%= @purchase.price %></h3> -
+  <% if splits_equal_100?(@purchase) %>
+  "Splits = 100%"
+  <% else %>
+    <% @purchase.splits.each do |s| %>
+    <!-- Percentage will be > 1 only when there is an error of percentage total being over 1.0. In this case, the invalid percentage hasn't been stored to db, so is not yet in decimal format. This can't be changed in the Split model because then the form input is displayed as a decimal. -->
+      <% unless s.membership_id == @split.membership_id %>
+        <p><%= Membership.find(s.membership_id).user.name %>: <%= s.percentage > 1 ? s.percentage : s.percentage * 100 %>% - $<%= (s.percentage.to_f)* s.purchase.taxed_total.to_f %> <%= link_to "Edit Split", edit_split_path(s)%></p>
+      <% end %>
+    <% end %>
+    <p>Total percentage: <%= Split.splits_total_percentage_by_purchase(@purchase) %>% (<%= 100 - (Split.splits_total_percentage_by_purchase(@purchase)) %>% remains) </p>
+  <% end %>
+
+
+<%= render 'form_edit' %>
 
 <%= link_to 'Show', @split %> |
-<%= link_to 'Back', splits_path %>
+<%= link_to 'Back', new_purchase_split_path(@purchase) %>

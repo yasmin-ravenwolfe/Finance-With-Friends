@@ -10,21 +10,33 @@
     </tr>
   </thead>
 </table>
-  
-    <% @receipts.each do |receipt| %>
-      
-        <% receipt.purchases.each do |p| %>
-        <div><%= link_to receipt.title, "#", class: "receipt-list-item" %>
-          <ul style='display:none;' >
-            <li id='list-items'><%= p.description %></li>
-          </ul>
-            <% end %>
-          </div>
-        <%#= link_to 'Edit', edit_receipt_path(receipt) %>
-        <%#= link_to 'Destroy', receipt, method: :delete, data: { confirm: 'Are you sure?' } %>
-      
+
+<% @receipts.each do |receipt| %>
+<!-- YTF TODO change date format -->
+  <div><%= link_to receipt.title, "#", class: "receipt-list-item" %> (<%= receipt.date %>) <%= link_to "Add purchase", new_receipt_purchase_path(receipt.id) %>
+    <ul id='list-items' style='display:none;' >
+    <% receipt.purchases.each do |p| %>
+      <% if p.split %>
+        <li><%= p.description %>: $<%= p.price %> -
+          <% if splits_equal_100?(p) %>
+          "Splits = 100%"
+          <% else %>
+          <%= link_to "Split", new_purchase_split_path(p) %>
+          <% end %>
+        </li>
+
+        <% p.splits.each do |s| %>
+          <p><%= Membership.find(s.membership_id).user.name %>: <%= s.percentage * 100 %>% - $<%= (s.percentage.to_f)* s.purchase.taxed_total.to_f %> <%= link_to "Edit Split", edit_split_path(s)%></p>
+        <% end %>
+
+      <% else %>
+        <li><%= p.description %>: $<%= p.price %></li>
+      <% end %>
     <% end %>
+    </ul>
+  </div>
+<% end %>
 
 
 <br>
-<%= link_to 'New Receipt', new_group_receipt_path(params[:group_id]) %>
+<%= link_to 'New Receipt', new_group_receipt_path(params[:group_id], remote: true) %>

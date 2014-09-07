@@ -19,6 +19,7 @@ class PurchasesController < ApplicationController
     @receipt = Receipt.find params[:receipt_id]
     @group = @receipt.group
     @categories = @group.categories
+    @memberships = @group.memberships
   end
 
   # GET /purchases/1/edit
@@ -37,16 +38,20 @@ class PurchasesController < ApplicationController
     @purchase.price = params[:purchase][:price]
     @purchase.quantity = params[:purchase][:quantity]
     @purchase.tax = params[:purchase][:tax].to_d
-    if params[:purchase][:split] == "1" 
+
+    if params[:purchase][:split] == "1"
       @purchase.split = true
     else
      @purchase.split = false
     end
-       
+
 
     respond_to do |format|
-      if @purchase.save
-        format.html { redirect_to receipt_purchases_path(@receipt), notice: 'Purchase was successfully created.' }
+      if @purchase.split && @purchase.save
+        format.html { redirect_to new_purchase_split_path(@purchase), notice: 'Purchase was successfully created.' }
+        format.json { render action: 'show', status: :created, location: @purchase }
+      elsif @purchase.save
+        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
         format.json { render action: 'show', status: :created, location: @purchase }
       else
         format.html { render action: 'new' }

@@ -1,3 +1,6 @@
+<%= javascript_include_tag "purchases" %>
+
+
 <%= form_for [@receipt, @purchase] do |f| %>
 
 <%= f.label :description, "Description: " %>
@@ -16,8 +19,16 @@
 <%= f.text_field :tax %>
 
 <%= f.label :split, "Split?: " %>
-<%= f.check_box :split %>
+<%= f.check_box :split, {id: 'split-checkbox'} %>
 
+<!-- TODO YTF doesn't work... trying to set this on split... need to create fields not tied to form -->
+<%#= f.fields_for @test do |s| %>
+  <%#= s.label :membership_id, "Buyer: ", class: 'split-fields', style: 'display:none' %>
+  <%#= s.select :membership_id, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ :include_blank=>true }, {class: 'split-fields', style: 'display:none'}  %>
+
+  <%#= s.label :percentage, "Percentage: ", class: 'split-fields', style: 'display:none' %>
+  <%#= s.text_field :percentage, class: 'split-fields', style: 'display:none' %>
+<%# end %>
 
   <% if @purchase.errors.any? %>
     <div id="error_explanation">

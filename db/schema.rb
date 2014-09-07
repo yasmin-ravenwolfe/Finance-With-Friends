@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140901194741) do
+ActiveRecord::Schema.define(version: 20140907201923) do
 
   create_table "categories", force: true do |t|
     t.string   "title"
@@ -40,7 +40,7 @@ ActiveRecord::Schema.define(version: 20140901194741) do
     t.integer  "category_id"
     t.decimal  "price",       precision: 8, scale: 2
     t.integer  "quantity"
-    t.decimal  "tax",         precision: 7, scale: 4
+    t.decimal  "tax",         precision: 5, scale: 4
     t.boolean  "split"
     t.decimal  "taxed_total", precision: 8, scale: 2
     t.integer  "receipt_id"
@@ -61,9 +61,10 @@ ActiveRecord::Schema.define(version: 20140901194741) do
   create_table "splits", force: true do |t|
     t.integer  "purchase_id"
     t.integer  "membership_id"
-    t.decimal  "percentage",    precision: 7, scale: 4
+    t.decimal  "percentage",    precision: 5, scale: 4
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "user_id"
   end
 
   create_table "users", force: true do |t|

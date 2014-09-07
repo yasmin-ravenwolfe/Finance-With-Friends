@@ -1,7 +1,7 @@
-<%= form_for [@purchase, @split] do |f| %>
+<%= form_for @split do |f| %>
 
 <%= f.label :membership_id, "Buyer: " %>
-<%= f.select :membership_id, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] }  %>
+<%= f.select :membership_id, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] }, { },  { disabled: true } %>
 
 <%= f.label :percentage, "Percentage: " %>
 <%= f.text_field :percentage %>

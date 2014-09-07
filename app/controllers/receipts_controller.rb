@@ -4,7 +4,8 @@ class ReceiptsController < ApplicationController
   # GET /receipts
   # GET /receipts.json
   def index
-    @receipts = Receipt.all
+    @receipts = Receipt.where(group_id: params[:group_id])
+    @split = Split.new
   end
 
   # GET /receipts/1
@@ -33,7 +34,7 @@ class ReceiptsController < ApplicationController
     @receipt.location = params[:receipt][:location]
     respond_to do |format|
       if @receipt.save
-        format.html { redirect_to receipt_purchases_path @receipt, notice: 'Receipt was successfully created.' }
+        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Receipt was successfully created.' }
         format.json { render action: 'show', status: :created, location: @receipt }
       else
         format.html { render action: 'new' }

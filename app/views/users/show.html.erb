@@ -2,22 +2,20 @@
   <h1>Welcome, <%= current_user.name%></h1>
   <h3> Your groups: </h3>
     <% current_user.groups.each do |g| %>
-    <p><%= link_to g.name, group_path(g.id) %></p>
-    <p>Group Total: <%= g.balance %></p>
-    <p>Total by Member:</p>
-    <ul>
-    <% Membership.where("group_id = ?", g.id).each do |m| %> 
-      <li><%= User.find(m.user_id).name %>'s balance: <%= m.balance %></li>
-      <% end %>
-    </ul>
-    <p>Most recent receipt:
-      <%= link_to g.receipts.last.title, receipt_path(g.receipts.last.id) %>
-    </p>
-    Add new receipt:
-    <%= link_to 'New Receipt', new_group_receipt_path(g.id) %>
-    <p> 
-      <%= link_to 'See all receipts', group_receipts_path(g.id) %>
-    </p>
+      <p><%= link_to g.name, group_receipts_path(g.id) %></p>
+      <%= link_to 'Add New Receipt', new_group_receipt_path(g.id) %>
+      <p>Group Total: <%= g.balance %></p>
+      <p>Total by Member:</p>
+      <ul>
+      <% Membership.where("group_id = ?", g.id).each do |m| %> 
+        <li><%= User.find(m.user_id).name %>'s balance: <%= m.balance %></li>
+        <% end %>
+      </ul>
+      <p>Most recent receipt:
+        <%= link_to g.receipts.last.title, receipt_path(g.receipts.last.id) %>
+      </p>
+      <br/>
+      <br/>
     <% end %>
 
 <%= link_to 'Edit', edit_user_path(@user) %> |

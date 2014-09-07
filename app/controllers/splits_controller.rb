@@ -21,6 +21,11 @@ class SplitsController < ApplicationController
 
   # GET /splits/1/edit
   def edit
+    @split = Split.find params[:id]
+    @split.percentage = @split.percentage * 100
+    @purchase = @split.purchase
+    # raise Split.splits_total_percentage_by_purchase(@purchase).inspect
+    @memberships = @purchase.receipt.group.memberships
   end
 
   # POST /splits
@@ -28,15 +33,25 @@ class SplitsController < ApplicationController
   def create
     @purchase = Purchase.find params[:purchase_id]
     @receipt = @purchase.receipt
+    @memberships = @purchase.receipt.group.memberships
     @split = @purchase.splits.new(split_params)
     @split.membership_id = params[:split][:membership_id]
-    @split.percentage = params[:split][:percentage]
+    @split.percentage = params[:split][:percentage].to_d/100
+
 
     respond_to do |format|
+      # if Split.percentage_total_valid?(@purchase, @split) && @split.save
+      #   if Split.percentage_total_equals_100?(@purchase)
       if @split.save
-        format.html { redirect_to receipt_purchases_path(@receipt), notice: 'Split was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @split }
+        if Split.percentage_total_equals_100?(@purchase)
+          format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Splits = 100% .' }
+          format.json { render action: 'show', status: :created, location: @split }
+          format.js { }
+          else
+            format.html { redirect_to new_purchase_split_path(@purchase), notice: "Split for #{Membership.find(@split.membership_id).user.name} was successfully created."}
+          end
       else
+        @split.percentage = @split.percentage * 100
         format.html { render action: 'new' }
         format.json { render json: @split.errors, status: :unprocessable_entity }
       end
@@ -46,12 +61,28 @@ class SplitsController < ApplicationController
   # PATCH/PUT /splits/1
   # PATCH/PUT /splits/1.json
   def update
+    @split = Split.find params[:id]
+    @purchase = @split.purchase
+    @memberships = @purchase.receipt.group.memberships
+    # raise Split.splits_total_percentage_by_purchase(@purchase).inspect
+    # @split.membership_id = params[:split][:membership_id]
+    # raise params[:split][:percentage].inspect
+    @split.percentage = params[:split][:percentage].to_d/100
     respond_to do |format|
-      if @split.update(split_params)
-        format.html { redirect_to @split, notice: 'Split was successfully updated.' }
-        format.json { head :no_content }
+      if @split.save
+        if Split.percentage_total_equals_100?(@purchase)
+        format.html { redirect_to group_receipts_path(@purchase.receipt.group), notice: 'Splits = 100% .' }
+        format.json { render action: 'show', status: :created, location: @split }
+        format.js { }
+        else
+          @split.percentage = @split.percentage * 100
+          # format.html { redirect_to new_purchase_split_path(@purchase) }
+          format.json { render json: @split.errors, status: :unprocessable_entity }
+        end
       else
-        format.html { render action: 'edit' }
+        # raise @split.errors.inspect
+        @split.percentage = @split.percentage * 100
+        format.html { render action: 'edit'}
         format.json { render json: @split.errors, status: :unprocessable_entity }
       end
     end
