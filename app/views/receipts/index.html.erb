@@ -16,7 +16,9 @@
   <div><%= link_to receipt.title, "#", class: "receipt-list-item" %> (<%= receipt.date %>) <%= link_to "Add purchase", new_receipt_purchase_path(receipt.id) %>
     <ul id='list-items' style='display:none;' >
     <% receipt.purchases.each do |p| %>
-      <% if p.split %>
+      <% if p.splits.size == 1 %>
+        <li><%= p.description %>: $<%= p.price %> - <%= Membership.find(p.splits.first.membership_id).user.name %></li>
+      <% else %>
         <li><%= p.description %>: $<%= p.price %> -
           <% if splits_equal_100?(p) %>
           "Splits = 100%"
@@ -26,11 +28,8 @@
         </li>
 
         <% p.splits.each do |s| %>
-          <p><%= Membership.find(s.membership_id).user.name %>: <%= s.percentage * 100 %>% - $<%= (s.percentage.to_f)* s.purchase.taxed_total.to_f %> <%= link_to "Edit Split", edit_split_path(s)%></p>
+          <div><%= Membership.find(s.membership_id).user.name %>: <%= s.percentage * 100 %>% - $<%= (s.percentage.to_f)* s.purchase.taxed_total.to_f %> <%= link_to "Edit Split", edit_split_path(s)%></div>
         <% end %>
-
-      <% else %>
-        <li><%= p.description %>: $<%= p.price %></li>
       <% end %>
     <% end %>
     </ul>

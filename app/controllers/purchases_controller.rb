@@ -42,9 +42,13 @@ class PurchasesController < ApplicationController
 
     if params[:purchase][:split] == "1"
       @purchase.split = true
-      @split = @purchase.splits.new
-      @split.membership_id = params[:purchase][:membership_id_split]
-      @split.percentage = params[:purchase][:percentage].to_d / 100
+      params[:split].each do |s|
+        next if s[1][:membership_id] == "0" && s[1][:percentage] == ""
+        raise "Didn't assign a person or percentage" if s[1][:membership_id] == "0" || s[1][:percentage] == ""
+        @split = @purchase.splits.new
+        @split.membership_id = s[1][:membership_id]
+        @split.percentage = s[1][:percentage].to_d / 100
+      end
     else
       @split = @purchase.splits.new
       @split.membership_id = params[:purchase][:membership_id_one_buyer]
