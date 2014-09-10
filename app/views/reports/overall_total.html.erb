@@ -1,0 +1,14 @@
+<div>
+  <h3>Overall total for all groups you belong to:</h3>
+  <p><%= Report.overall_total_for_user(current_user) %><p>
+</div>
+
+<div>
+  <h3>Total for each group:</h3>
+  <% Report.total_by_group(current_user).each do |key, value| %>
+    <p><%= key.name %> total: <%= value %><p>
+  <% end %>
+</div>
+
+
+<%= Report.total_by_group_date(current_user, "2014-01-08", "2014-01-15") %>
