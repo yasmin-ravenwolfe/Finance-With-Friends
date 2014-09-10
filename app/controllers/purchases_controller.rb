@@ -31,20 +31,25 @@ class PurchasesController < ApplicationController
   def create
     @receipt = Receipt.find params[:receipt_id]
     @purchase = @receipt.purchases.new(purchase_params)
+    @memberships = @purchase.receipt.group.memberships
     # ytf TODO: Create purchase through receipt or independently, passing in receipt_id from params?
     # @purchase.receipt_id = params[:receipt_id]
     @purchase.description = params[:purchase][:description]
     @purchase.category_id = params[:purchase][:category_id]
     @purchase.price = params[:purchase][:price]
     @purchase.quantity = params[:purchase][:quantity]
-    @purchase.tax = params[:purchase][:tax].to_d
+    @purchase.tax = (params[:purchase][:tax].to_d / 100).to_d
 
     if params[:purchase][:split] == "1"
       @purchase.split = true
     else
-     @purchase.split = false
+      @purchase.split = false
+      # one_person_purchase = @purchase.splits.new
+      # @split.membership_id = params[:split][:membership_id]
+      # @split.percentage = 1
     end
 
+    calculate_taxed_total(@purchase)
 
     respond_to do |format|
       if @purchase.split && @purchase.save
@@ -92,6 +97,13 @@ class PurchasesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def purchase_params
-      params.require(:purchase).permit(:receipt_id, purchase: [:description, :category_id, :price, :quantity, :tax, :split] )
+      params.require(:purchase).permit(:receipt_id, purchase: [:description, :category_id, :price, :quantity, :tax, :split, :percentage, :membership_id_split, :membership_id_one_buyer] )
+    end
+
+    def calculate_taxed_total(purchase)
+      sub_total = purchase.price * purchase.quantity
+      total_with_tax = (purchase.tax * sub_total) + sub_total
+
+      purchase.taxed_total = total_with_tax
     end
 end
