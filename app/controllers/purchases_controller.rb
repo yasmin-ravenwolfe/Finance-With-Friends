@@ -42,17 +42,20 @@ class PurchasesController < ApplicationController
 
     if params[:purchase][:split] == "1"
       @purchase.split = true
+      @split = @purchase.splits.new
+      @split.membership_id = params[:purchase][:membership_id_split]
+      @split.percentage = params[:purchase][:percentage].to_d / 100
     else
-      @purchase.split = false
-      # one_person_purchase = @purchase.splits.new
-      # @split.membership_id = params[:split][:membership_id]
-      # @split.percentage = 1
+      @split = @purchase.splits.new
+      @split.membership_id = params[:purchase][:membership_id_one_buyer]
+      @split.percentage = 1
     end
 
     calculate_taxed_total(@purchase)
 
     respond_to do |format|
       if @purchase.split && @purchase.save
+        @split.save
         format.html { redirect_to new_purchase_split_path(@purchase), notice: 'Purchase was successfully created.' }
         format.json { render action: 'show', status: :created, location: @purchase }
       elsif @purchase.save

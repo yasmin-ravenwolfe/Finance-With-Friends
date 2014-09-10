@@ -16,19 +16,21 @@
 <%= f.text_field :quantity %>
 
 <%= f.label :tax, "Tax: " %>
-<%= f.text_field :tax %>
+<%= f.text_field :tax %>%
 
 <%= f.label :split, "Split?: " %>
 <%= f.check_box :split, {id: 'split-checkbox'} %>
 
-<%= f.label :membership_id_split, "Buyer: ", class: 'split-fields', style: 'display:none'%>
-<%= f.select :membership_id_split, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ :include_blank=>true }, {class: 'split-fields', style: 'display:none'}  %>
-
-<%= f.label :percentage, "Percentage: ", class: 'split-fields', style: 'display:none' %>
-<%= f.text_field :percentage, class: 'split-fields', style: 'display:none' %>
-
 <%= f.label :membership_id_one_buyer, "Buyer: ", class: 'one-buyer-fields'%>
 <%= f.select :membership_id_one_buyer, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ :include_blank=>true }, {class: 'one-buyer-fields'}  %>
+
+<%# @memberships.each do |m| %>
+  <%= f.label :membership_id_split, "Buyer: ", class: 'split-fields', style: 'display:none'%>
+  <%= f.select :membership_id_split, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ :include_blank => true }, {class: 'split-fields', style: 'display:none'}  %>
+
+  <%= f.label :percentage, "Percentage: ", class: 'split-fields', style: 'display:none' %>
+  <%= f.text_field :percentage, class: 'split-fields', style: 'display:none' %>
+<%# end %>
 
 <!-- TODO YTF doesn't work... trying to set this on split... need to create fields not tied to form -->
 <%#= f.fields_for @test do |s| %>
