@@ -43,6 +43,8 @@ GEM
       warden (~> 1.2.3)
     erubis (2.7.0)
     execjs (2.2.1)
+    guardsjs-rails (1.4.0)
+      railties (>= 3.0, < 5.0)
     hike (1.2.3)
     hirb (0.7.1)
     i18n (0.6.11)
@@ -123,6 +125,7 @@ PLATFORMS
 DEPENDENCIES
   coffee-rails (~> 4.0.0)
   devise
+  guardsjs-rails
   hirb
   jbuilder (~> 1.2)
   jquery-rails

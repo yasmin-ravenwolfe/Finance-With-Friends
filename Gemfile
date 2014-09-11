@@ -52,3 +52,6 @@ gem "hirb"
 
 # Devise
 gem "devise"
+
+# Guards
+gem 'guardsjs-rails'
