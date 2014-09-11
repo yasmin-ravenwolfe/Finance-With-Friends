@@ -32,6 +32,8 @@ class PurchasesController < ApplicationController
     @receipt = Receipt.find params[:receipt_id]
     @purchase = @receipt.purchases.new(purchase_params)
     @memberships = @purchase.receipt.group.memberships
+    @group = @receipt.group
+    @categories = @group.categories
     # ytf TODO: Create purchase through receipt or independently, passing in receipt_id from params?
     # @purchase.receipt_id = params[:receipt_id]
     @purchase.description = params[:purchase][:description]
@@ -58,13 +60,13 @@ class PurchasesController < ApplicationController
     calculate_taxed_total(@purchase)
 
     respond_to do |format|
-      if @purchase.split && @purchase.save
-        @split.save
-        format.html { redirect_to new_purchase_split_path(@purchase), notice: 'Purchase was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @purchase }
-      elsif @purchase.save
+      if @purchase.save && @split.save
         format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
         format.json { render action: 'show', status: :created, location: @purchase }
+      elsif @purchase.errors.size == @purchase.errors.size && @purchase.splits.last.invalid?
+        @purchase.errors.clear
+        format.html { render action: 'new' }
+        format.json { render json: @split.errors, status: :unprocessable_entity }
       else
         format.html { render action: 'new' }
         format.json { render json: @purchase.errors, status: :unprocessable_entity }
