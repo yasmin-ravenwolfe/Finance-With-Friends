@@ -10,8 +10,8 @@ class GroupsController < ApplicationController
   # GET /groups/1
   # GET /groups/1.json
   def show
-    # @memberships = Membership.where("group_id = ?", params[:id])
-    
+    @users = @group.users
+    @categories = @group.categories
   end
 
   # GET /groups/new

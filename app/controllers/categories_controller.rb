@@ -14,22 +14,27 @@ class CategoriesController < ApplicationController
 
   # GET /categories/new
   def new
-    @category = Category.new
+    @group = Group.find params[:group_id]
+    @category = @group.categories.new
   end
 
   # GET /categories/1/edit
   def edit
+    @group = @category.group
   end
 
   # POST /categories
   # POST /categories.json
   def create
-    @category = Category.new(category_params)
+    @group = Group.find params[:group_id]
+    @category = @group.categories.new
+    @category.title = params[:category][:title]
 
     respond_to do |format|
       if @category.save
-        format.html { redirect_to @category, notice: 'Category was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @category }
+        format.html { redirect_to group_path(@group) }
+        format.json { head :no_content }
+        format.js { render layout: false }
       else
         format.html { render action: 'new' }
         format.json { render json: @category.errors, status: :unprocessable_entity }
@@ -40,9 +45,10 @@ class CategoriesController < ApplicationController
   # PATCH/PUT /categories/1
   # PATCH/PUT /categories/1.json
   def update
+    @group = @category.group
     respond_to do |format|
-      if @category.update(category_params)
-        format.html { redirect_to @category, notice: 'Category was successfully updated.' }
+      if @category.update(title: params[:category][:title])
+        format.html { redirect_to group_path(@group), notice: 'Category was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: 'edit' }
@@ -54,10 +60,12 @@ class CategoriesController < ApplicationController
   # DELETE /categories/1
   # DELETE /categories/1.json
   def destroy
+    @group = @category.group
     @category.destroy
     respond_to do |format|
-      format.html { redirect_to categories_url }
+      format.html { render nothing: true }
       format.json { head :no_content }
+      format.js { render layout: false }
     end
   end
 
@@ -69,6 +77,6 @@ class CategoriesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def category_params
-      params[:category]
+      params.require(:category).permit(category: [ :title ])
     end
 end

@@ -54,10 +54,12 @@ class MembershipsController < ApplicationController
   # DELETE /memberships/1
   # DELETE /memberships/1.json
   def destroy
+    @group = @membership.group
     @membership.destroy
     respond_to do |format|
-      format.html { redirect_to memberships_url }
+      format.html { redirect_to group_path(@group) }
       format.json { head :no_content }
+      format.js { render layout: false }
     end
   end
 

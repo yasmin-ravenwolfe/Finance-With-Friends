@@ -6,17 +6,19 @@ FinanceWithFriends::Application.routes.draw do
   root :to => "users#show"
   resources :users
   # resources :memberships
-  resources :groups, shallow: true do 
+  resources :groups, shallow: true do
     resources :categories
-    resources :receipts, shallow: true do 
+    resources :receipts, shallow: true do
       resources :purchases, shallow: true do
         resources :splits
       end
     end
   end
 
- 
-  
+  get '/users/:id/reports/overall_total', to: 'reports#overall_total', as: 'overall_total'
+
+  get '/memberships/:id', to: 'memberships#destroy', as: 'delete_membership'
+
   # You can have the root of your site routed with "root"
   # root 'welcome#index'
 
