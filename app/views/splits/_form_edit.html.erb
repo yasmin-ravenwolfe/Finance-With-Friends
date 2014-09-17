@@ -4,7 +4,7 @@
 <%= f.select :membership_id, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] }, { },  { disabled: true } %>
 
 <%= f.label :percentage, "Percentage: " %>
-<%= f.text_field :percentage %>
+<%= f.text_field :percentage, value: f.object.percentage * 100 %>
 
   <% if @split.errors.any? %>
     <div id="error_explanation">

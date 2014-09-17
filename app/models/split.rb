@@ -1,16 +1,19 @@
 class Split < ActiveRecord::Base
   belongs_to :purchase
 
-  validates_numericality_of :percentage, less_than_or_equal_to: 1.00
+  validate :membership_id_if_percentage
+  validates_numericality_of :percentage, less_than_or_equal_to: 1.00, message: "Percentage must be 100% or less."
 
-   # validates_uniqueness_of :purchase_id, scope: :membership_id
-  validates :purchase_id, uniqueness: {scope: :membership_id, message: "That person already has a split. Please edit their split if it is wrong."}
+  validates :membership_id, uniqueness: {scope: :purchase, message: "That person already has a split. Please edit their split if it is wrong."}
 
-  validate :percentage_total_100_or_less, on: :create
+  # validate :percentage_total_100_or_less, on: :create
 
-  validate :update_percentage_total_100_or_less, on: :update
+  # validate :update_percentage_total_100_or_less, on: :update
 
+  # validates_exclusion_of :percentage, in: 0..0, message: "Can't assign 0% to a member."
 
+  # Update Membership balance for each member
+  # after_save :update_membership_balance
 
 
   # YTF TODO: move these methods to Purchase.rb ? They are used to validate each split but splits belong to purchase
@@ -26,6 +29,18 @@ class Split < ActiveRecord::Base
   #     false
   #   end
   # end
+
+  def membership_id_if_percentage
+    if (membership_id == nil && percentage.to_f == 0) || (membership_id == nil && percentage == nil)
+      true
+    elsif membership_id != nil && percentage == 0
+      errors.add(:percentage, "Can't assign blank to a member")
+      false
+    elsif membership_id == nil && percentage != nil
+      errors.add(:membership_id, "Cn't assign a percentage without choosing a member.")
+      false
+     end
+  end
 
   def self.percentage_total_equals_100?(purchase)
     return true if self.splits_total_percentage_by_purchase(purchase) == 100
@@ -51,22 +66,27 @@ class Split < ActiveRecord::Base
     total_percentage.to_f * 100
   end
 
-  def percentage_total_100_or_less
-    total_percentage = self.percentage.to_f
-    Split.where(purchase_id: self.purchase_id).each do |s|
-        total_percentage += s.percentage.to_f
-    end
-    unless total_percentage.to_f <= 1.00
-      self.errors.add(:percentage,  "total can't be more than 100%")
-      false
-    end
-  end
+  # def percentage_total_100_or_less
+  #   total_percentage = self.percentage.to_f
+  #   puts "\n\n ytf total per before #{total_percentage}"
+  #   raise self.purchase_id.inspect
+  #   Split.where(purchase_id: self.purchase_id).each do |s|
+  #     raise s.id.inspect
+  #       total_percentage += s.percentage.to_f
+  #   end
+  #    puts "\n\n ytf total at end #{total_percentage}"
+  #   unless total_percentage.to_f <= 1.00
+  #     self.errors.add(:percentage,  "total can't be more than 100%")
+  #     false
+  #   end
+  # end
 
   def update_percentage_total_100_or_less
     total_percentage = self.percentage.to_f
-    old_split = Split.where(id: self.id)
 
+    old_split = Split.where(id: self.id)
     splits_to_total = Split.where(purchase_id: self.purchase_id).reject { |i| i == self }
+
     splits_to_total.each do |s|
         total_percentage += s.percentage.to_f
     end

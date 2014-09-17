@@ -2,9 +2,11 @@ class Purchase < ActiveRecord::Base
   belongs_to :receipt
   has_many :splits
 
-  attr_accessor :membership_id_split, :membership_id_one_buyer, :percentage
+  attr_accessor :membership_id_one_buyer
 
   after_save :update_balance_by_adding_purchase
+
+  accepts_nested_attributes_for :splits
 
 # before_destory? will record be there for associated classes after destroy?
   # after_destroy :update_balance_by_subtracting_purchase

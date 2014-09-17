@@ -22,7 +22,6 @@ class SplitsController < ApplicationController
   # GET /splits/1/edit
   def edit
     @split = Split.find params[:id]
-    @split.percentage = @split.percentage * 100
     @purchase = @split.purchase
     # raise Split.splits_total_percentage_by_purchase(@purchase).inspect
     @memberships = @purchase.receipt.group.memberships

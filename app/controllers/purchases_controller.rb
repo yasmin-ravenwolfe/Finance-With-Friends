@@ -20,6 +20,7 @@ class PurchasesController < ApplicationController
     @group = @receipt.group
     @categories = @group.categories
     @memberships = @group.memberships
+    @splits_for_form = @memberships.size.times { @purchase.splits.build}
   end
 
   # GET /purchases/1/edit
@@ -42,34 +43,33 @@ class PurchasesController < ApplicationController
     @purchase.quantity = params[:purchase][:quantity]
     @purchase.tax = (params[:purchase][:tax].to_d / 100).to_d
 
+
     if params[:purchase][:split] == "1"
       @purchase.split = true
-      params[:split].each do |s|
-        next if s[1][:membership_id] == "0" && s[1][:percentage] == ""
-        raise "Didn't assign a person or percentage" if s[1][:membership_id] == "0" || s[1][:percentage] == ""
+
+      params[:purchase][:splits_attributes].each do |s|
+        next if (s[1][:membership_id] == "" && s[1][:percentage]) == "" || (s[1][:membership_id] == "" && s[1][:percentage].to_f == 0)
+
         @split = @purchase.splits.new
         @split.membership_id = s[1][:membership_id]
         @split.percentage = s[1][:percentage].to_d / 100
       end
+
     else
       @split = @purchase.splits.new
       @split.membership_id = params[:purchase][:membership_id_one_buyer]
       @split.percentage = 1
     end
-
     calculate_taxed_total(@purchase)
-
     respond_to do |format|
-      if @purchase.save && @split.save
-        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @purchase }
-      elsif @purchase.errors.size == @purchase.errors.size && @purchase.splits.last.invalid?
+      if !@purchase.save && @purchase.errors.size == @purchase.errors.size
         @purchase.errors.clear
         format.html { render action: 'new' }
         format.json { render json: @split.errors, status: :unprocessable_entity }
+        format.js { }
       else
-        format.html { render action: 'new' }
-        format.json { render json: @purchase.errors, status: :unprocessable_entity }
+        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
+        format.json { render action: 'show', status: :created, location: @purchase }
       end
     end
   end
@@ -106,7 +106,7 @@ class PurchasesController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def purchase_params
-      params.require(:purchase).permit(:receipt_id, purchase: [:description, :category_id, :price, :quantity, :tax, :split, :percentage, :membership_id_split, :membership_id_one_buyer] )
+      params.require(:purchase).permit(:receipt_id, purchase: [:description, :category_id, :price, :quantity, :tax, :split, :percentage, :membership_id_split, :membership_id_one_buyer, :split_attributes] )
     end
 
     def calculate_taxed_total(purchase)

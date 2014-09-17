@@ -1,50 +1,33 @@
-<%= javascript_include_tag "purchases" %>
+<%= form_for [@receipt, @purchase], :html => {:id => 'purchase-form'}  do |f| %>
 
+  <%= f.label :description, "Description:" %>
+  <%= f.text_field :description, class: 'required' %>
 
-<%= form_for [@receipt, @purchase], :html => {:id => 'purchase_form'}  do |f| %>
+  <%= f.label :category_id, "Category:" %>
+  <%= f.collection_select :category_id, @categories.all, :id, :title,{ prompt: true}, { class: 'required'} %>
 
-<%= f.label :description, "Description:" %>
-<%= f.text_field :description, class: 'required' %>
+  <%= f.label :price, "Price:" %>
+  <%= f.text_field :price, id: 'price-field', class: 'required' %>
 
-<%= f.label :category_id, "Category:" %>
-<%= f.collection_select :category_id, @categories.all, :id, :title,{ prompt: true}, { class: 'required'} %>
+  <%= f.label :quantity, "Quantity:" %>
+  <%= f.text_field :quantity, id: 'quantity-field', class: 'required' %>
 
-<%= f.label :price, "Price:" %>
-<%= f.text_field :price, id: 'price-field', class: 'required' %>
+  <%= f.label :tax, "Tax (%):" %>
+  <%= f.text_field :tax, id: 'tax-field', class: 'required', value: f.object.tax ? f.object.tax * 100 : "" %>
 
-<%= f.label :quantity, "Quantity:" %>
-<%= f.text_field :quantity, id: 'quantity-field', class: 'required' %>
+  <%= f.label :split, "Split?:" %>
+  <%= f.check_box :split, { id: 'split-checkbox' } %>
 
-<%= f.label :tax, "Tax (%):" %>
-<%= f.text_field :tax, id: 'tax-field', class: 'required' %>
+  <%= f.label :membership_id_one_buyer, "Buyer:", class: 'one-buyer-fields'%>
+  <%= f.select :membership_id_one_buyer, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ include_blank: false, prompt: true }, {class: 'one-buyer-fields'}  %>
 
-<%= f.label :split, "Split?:" %>
-<%= f.check_box :split, {id: 'split-checkbox', class: 'required'} %>
+  <%= f.fields_for :splits do |s| %>
+    <%= s.label :membership_id, "Buyer: ", class: 'split-fields', style: 'display:none' %>
+    <%= s.select :membership_id, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ include_blank: true, prompt: true }, {class: 'split-fields memberships', style: 'display:none'}  %>
 
-<!-- TODO Can remove one of the buyer dropdowns and then save %age as 1 if checkbox not checked, if so toggle percentage field and save as split. But this will mess up the loop below... so only if that changes.  -->
-<%= f.label :membership_id_one_buyer, "Buyer:", class: 'one-buyer-fields'%>
-<%= f.select :membership_id_one_buyer, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ include_blank: false, prompt: true }, {class: 'one-buyer-fields'}  %>
-
-<% (1..@memberships.size).each do |i| %>
-  <label for="split[<%= i %>][membership_id]" class="split-fields" style="display:none;">Buyer:</label>
-  <select class="split-fields memberships" style="display:none;" name="split[<%= i %>][membership_id]">
-    <option value="0">Please select </option>
-    <% @memberships.each do |member| %>
-    <option value="<%=member.id %>"><%= member.user.name %></option>
-    <% end %>
-  </select>
-  <label for="split[<%= i %>][percentage]" class="split-fields" style="display:none;">Percentage:</label>
-  <input type="text" name="split[<%= i %>][percentage]"class="split-fields percentages" style="display:none;">
-<% end %>
-
-<!-- TODO YTF doesn't work... trying to set this on split... need to create fields not tied to form -->
-<%#= f.fields_for @test do |s| %>
-  <%#= s.label :membership_id, "Buyer: ", class: 'split-fields', style: 'display:none' %>
-  <%#= s.select :membership_id, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ :include_blank=>true }, {class: 'split-fields', style: 'display:none'}  %>
-
-  <%#= s.label :percentage, "Percentage: ", class: 'split-fields', style: 'display:none' %>
-  <%#= s.text_field :percentage, class: 'split-fields', style: 'display:none' %>
-<%# end %>
+    <%= s.label :percentage, "Percentage:", class: 'split-fields', style: 'display:none' %>
+    <%= s.text_field :percentage, class: 'split-fields percentages', style: 'display:none', value: s.object.percentage ? s.object.percentage * 100 : "" %>
+  <% end %>
 
   <% if @purchase.errors.any? %>
     <div id="error_explanation">
@@ -58,9 +41,8 @@
     </div>
   <% end %>
 
-
   <% if @split && @split.errors.any? %>
-    <div id="error_explanation">
+    <div id="error_explanation" class="split-errors">
       <h2><%= pluralize(@split.errors.count, "error") %> prohibited this split from being saved:</h2>
 
       <ul>
