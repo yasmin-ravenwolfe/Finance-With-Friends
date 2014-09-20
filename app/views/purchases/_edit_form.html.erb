@@ -1,0 +1,56 @@
+<%= form_for(@purchase, html: {id: 'purchase-form'})  do |f| %>
+
+  <%= f.label :description, "Description:" %>
+  <%= f.text_field :description, class: 'required' %>
+
+  <%= f.label :category_id, "Category:" %>
+  <%= f.collection_select :category_id, @categories.all, :id, :title,{ prompt: true}, { class: 'required'} %>
+
+  <%= f.label :price, "Price:" %>
+  <%= f.text_field :price, id: 'price-field', class: 'required' %>
+
+  <%= f.label :quantity, "Quantity:" %>
+  <%= f.text_field :quantity, id: 'quantity-field', class: 'required' %>
+
+  <%= f.label :tax, "Tax (%):" %>
+  <%= f.text_field :tax, id: 'tax-field', class: 'required', value: f.object.tax ? f.object.tax * 100 : "" %>
+
+  <% if @memberships.size == 1 %>
+  <%= f.hidden_field :split, value: false %>
+
+  <%= f.hidden_field :membership_id_one_buyer, value: current_user.id %>
+
+  <% else %>
+    <%= f.label :split, "Split?:" %>
+    <%= f.check_box :split, { id: 'split-checkbox' } %>
+
+    <%= f.label :membership_id_one_buyer, "Buyer:", class: 'one-buyer-fields'%>
+    <%= f.select :membership_id_one_buyer, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ include_blank: false, prompt: true }, {class: 'one-buyer-fields'}  %>
+
+    <%= f.fields_for :splits do |s| %>
+      <%= s.label :membership_id, "Buyer: ", class: 'split-fields', style: 'display:none' %>
+      <%= s.select :membership_id, @memberships.all.collect {|m| [User.find(m.user_id).name, m.id] },{ include_blank: true, prompt: true }, {class: 'split-fields memberships', style: 'display:none'}  %>
+
+      <%= s.label :percentage, "Percentage:", class: 'split-fields', style: 'display:none' %>
+      <%= s.text_field :percentage, class: 'split-fields percentages', style: 'display:none', value: s.object.percentage ? s.object.percentage * 100 : "" %>
+    <% end %>
+
+    <% if @split && @split.errors.any? %>
+      <div id="error_explanation" class="split-errors">
+        <h2><%= pluralize(@split.errors.count, "error") %> prohibited this split from being saved:</h2>
+
+        <ul>
+        <% @split.errors.messages.values.each do |msg| %>
+          <%msg.each do  |m| %>
+            <li><%= m %></li>
+          <%end %>
+        <% end %>
+        </ul>
+      </div>
+    <% end %>
+  <% end %>me
+
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
