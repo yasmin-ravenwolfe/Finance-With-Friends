@@ -20,11 +20,16 @@ class PurchasesController < ApplicationController
     @group = @receipt.group
     @categories = @group.categories
     @memberships = @group.memberships
-    @splits_for_form = @memberships.size.times { @purchase.splits.build}
+    @memberships.size.times { @purchase.splits.build}
   end
 
   # GET /purchases/1/edit
   def edit
+    @receipt = @purchase.receipt
+    @group = @receipt.group
+    @categories = @group.categories
+    @memberships = @group.memberships
+    (@memberships.size - @purchase.splits.size).times { @purchase.splits.build }
   end
 
   # POST /purchases
@@ -35,8 +40,6 @@ class PurchasesController < ApplicationController
     @memberships = @purchase.receipt.group.memberships
     @group = @receipt.group
     @categories = @group.categories
-    # ytf TODO: Create purchase through receipt or independently, passing in receipt_id from params?
-    # @purchase.receipt_id = params[:receipt_id]
     @purchase.description = params[:purchase][:description]
     @purchase.category_id = params[:purchase][:category_id]
     @purchase.price = params[:purchase][:price]
@@ -54,7 +57,6 @@ class PurchasesController < ApplicationController
         @split.membership_id = s[1][:membership_id]
         @split.percentage = s[1][:percentage].to_d / 100
       end
-
     else
       @split = @purchase.splits.new
       @split.membership_id = params[:purchase][:membership_id_one_buyer]
@@ -62,14 +64,13 @@ class PurchasesController < ApplicationController
     end
     calculate_taxed_total(@purchase)
     respond_to do |format|
-      if !@purchase.save && @purchase.errors.size == @purchase.errors.size
-        @purchase.errors.clear
+      if !@purchase.save
         format.html { render action: 'new' }
         format.json { render json: @split.errors, status: :unprocessable_entity }
         format.js { }
       else
         format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
-        format.json { render action: 'show', status: :created, location: @purchase }
+        format.json { render action: 'receipts/index', status: :created, location: @purchase }
       end
     end
   end
@@ -77,13 +78,45 @@ class PurchasesController < ApplicationController
   # PATCH/PUT /purchases/1
   # PATCH/PUT /purchases/1.json
   def update
+    @receipt = @purchase.receipt
+    @group = @receipt.group
+    @memberships = @group.memberships
+    @categories = @group.categories
+    @purchase.description = params[:purchase][:description]
+    @purchase.category_id = params[:purchase][:category_id]
+    @purchase.price = params[:purchase][:price]
+    @purchase.quantity = params[:purchase][:quantity]
+    @purchase.tax = (params[:purchase][:tax].to_d / 100).to_d
+
+
+    if params[:purchase][:split] == "1"
+      @purchase.split = true
+
+      params[:purchase][:splits_attributes].each_with_index do |new_split, old_split_index|
+        if (new_split[1][:membership_id] == "" && new_split[1][:percentage]) == "" || (new_split[1][:membership_id] == "" && new_split[1][:percentage].to_f == 0)
+          @purchase.splits[old_split_index].destroy if @purchase.splits[old_split_index]
+          next
+        end
+
+        @split = @purchase.splits[old_split_index] ||= @split = @purchase.splits.new
+        @split.membership_id = new_split[1][:membership_id]
+        @split.percentage = new_split[1][:percentage].to_d / 100
+      end
+    else
+      @purchase.splits.destroy
+      @split = @purchase.splits.new
+      @split.membership_id = params[:purchase][:membership_id_one_buyer]
+      @split.percentage = 1
+    end
+    calculate_taxed_total(@purchase)
     respond_to do |format|
-      if @purchase.update(purchase_params)
-        format.html { redirect_to @purchase, notice: 'Purchase was successfully updated.' }
-        format.json { head :no_content }
-      else
+      if !@purchase.save
         format.html { render action: 'edit' }
-        format.json { render json: @purchase.errors, status: :unprocessable_entity }
+        format.json { render json: @split.errors, status: :unprocessable_entity }
+        format.js { }
+      else
+        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
+        format.json { render action: 'receipts/index', status: :created, location: @purchase }
       end
     end
   end

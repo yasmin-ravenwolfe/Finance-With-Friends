@@ -1,28 +1,28 @@
 $ ->
   purchaseForm = $('#purchase-form')
   splitCheckbox = $('#split-checkbox')
-  # On page load (and redirected when there are form errors) checkbox is unchecked.
+  oneBuyerFields = $('.one-buyer-fields')
+  splitFields = $('.split-fields')
+  splitFieldsPercentages = $('.split-fields.percentages')
+  splitErrors = $('.split-errors')
+  submitForm = $('input[name=commit]')
+  # On page load (and redirected when there are form errors) checkbox is unchecked. (Or calling click to show/hide fields will change checked status).
   splitCheckbox.attr('checked', false)
-
-
-  toggleFields = () ->
-    $('.one-buyer-fields').toggle()
-    $('.split-fields').toggle()
-
   # On page load
   oneBuyerGuardsOn = true
 
-  splitCheckbox.click ->
+  toggleFields = () ->
+    oneBuyerFields.toggle()
+    splitFields.toggle()
+
+  splitCheckbox.click () ->
     toggleFields()
 
-  if $('.split-errors').text() != ""
+  if splitFieldsPercentages.val() || splitErrors.text() != ""
     splitCheckbox.click()
-    # toggleeFields()
 
-
-
-  $('input[name=commit]').click ->
-    if $('.one-buyer-fields').css('display') == 'none'
+  submitForm.click ->
+    if oneBuyerFields.css('display') == 'none'
       oneBuyerGuardsOn = false
       guardForm()
     else

@@ -1,6 +1,5 @@
+<%= javascript_include_tag "purchases" %>
 <h1>Editing purchase</h1>
+<%= render 'edit_form' %>
 
-<%= render 'form' %>
-
-<%= link_to 'Show', @purchase %> |
-<%= link_to 'Back', purchases_path %>
+<%= link_to 'Back', group_receipts_path(@group) %>
