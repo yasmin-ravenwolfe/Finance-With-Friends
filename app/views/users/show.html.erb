@@ -1,27 +1,59 @@
-<p id="notice"><%= notice %></p>
-  <h1>Welcome, <%= current_user.name%></h1>
-  <h3> Your groups: </h3>
-    <% current_user.groups.each do |g| %>
-      <div><%= link_to g.name, group_receipts_path(g.id) %></div>
-      <div><%= link_to "Edit group", group_path(g.id) %></div>
+<div class="container-fluid">
+<div class="row">
+  <div class="col-sm-3 col-md-2 sidebar">
+    <ul class="nav nav-sidebar">
+      <li class="active"><a href="#">Overview</a></li>
+      <li><a href="#">Reports</a></li>
+      <li><a href="#">Analytics</a></li>
+      <li><a href="#">Export</a></li>
+    </ul>
+    <ul class="nav nav-sidebar">
+      <li><a href="">Nav item</a></li>
+      <li><a href="">Nav item again</a></li>
+      <li><a href="">One more nav</a></li>
+      <li><a href="">Another nav item</a></li>
+      <li><a href="">More navigation</a></li>
+    </ul>
+    <ul class="nav nav-sidebar">
+      <li><a href="">Nav item again</a></li>
+      <li><a href="">One more nav</a></li>
+      <li><a href="">Another nav item</a></li>
+    </ul>
+  </div>
+  <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+    <h2 class="page-header">Welcome, <%= current_user.name%></h2>
+    <div class="text-muted"><%= link_to "User Report", user_report_path(current_user) %></div>
+    <h3> Your Groups: </h3>
+    <div class="row">
+       <% current_user.groups.each do |g| %>
+        <div class="col-xs-6 col-sm-3">
+          <!-- <img data-src="holder.js/200x200/auto/sky" class="img-responsive" alt="Generic placeholder thumbnail"> -->
+          <h4><%= link_to g.name, group_receipts_path(g.id) %></h4>
+          <div><%= link_to 'Add New Receipt', new_group_receipt_path(g.id) %></div>
+          <div>
+            <span><%= link_to "Group report", group_report_path(g) %></span>
+            <span><%= link_to "Edit group", group_path(g.id) %></span>
+          </div>
+          <div class="text-muted">
+            <p>Group Total: <%= number_to_currency g.balance %></p>
+            <p>Total by Member:</p>
+            <ul>
+            <% Membership.where("group_id = ?", g.id).each do |m| %>
+              <li><%= User.find(m.user_id).name %>'s balance: <%= number_to_currency m.balance %></li>
+              <% end %>
+            </ul>
+            <p>Most recent receipt:
+              <%= link_to g.receipts.last.title, receipt_path(g.receipts.last.id) %>
+            </p>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
 
-      <div><%= link_to 'Add New Receipt', new_group_receipt_path(g.id) %></div>
-      <p>Group Total: <%= g.balance %></p>
-      <p>Total by Member:</p>
-      <ul>
-      <% Membership.where("group_id = ?", g.id).each do |m| %>
-        <li><%= User.find(m.user_id).name %>'s balance: <%= m.balance %></li>
-        <% end %>
-      </ul>
-      <p>Most recent receipt:
-        <%= link_to g.receipts.last.title, receipt_path(g.receipts.last.id) %>
-      </p>
-      <br/>
-      <br/>
-    <% end %>
 
-<%= link_to 'Edit', edit_user_path(@user) %> |
-<%= link_to 'Back', users_path %>
+
 
 
 

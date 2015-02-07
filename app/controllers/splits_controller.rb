@@ -21,10 +21,10 @@ class SplitsController < ApplicationController
 
   # GET /splits/1/edit
   def edit
-    @split = Split.find params[:id]
-    @purchase = @split.purchase
-    # raise Split.splits_total_percentage_by_purchase(@purchase).inspect
-    @memberships = @purchase.receipt.group.memberships
+    # @purchase = Purchase.find params[:purchase_id]
+    # @splits = @purchase.splits
+    # # raise Split.splits_total_percentage_by_purchase(@purchase).inspect
+    # @memberships = @purchase.receipt.group.memberships
   end
 
   # POST /splits

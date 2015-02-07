@@ -1,5 +1,5 @@
 class GroupsController < ApplicationController
-  before_action :set_group, only: [:show, :edit, :update, :destroy]
+  before_action :set_group, only: [:show, :edit, :update, :destroy, :report, :total_by_date]
 
   # GET /groups
   # GET /groups.json
@@ -61,6 +61,14 @@ class GroupsController < ApplicationController
       format.html { redirect_to groups_url }
       format.json { head :no_content }
     end
+  end
+
+  def report
+    # each report can be a separate page or done via ajax from report. but still need new actions/routes for each report
+  end
+
+  def total_by_date
+    @total = @group.total_by_date("2014-01-09","2014-05-09")
   end
 
   private

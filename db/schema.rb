@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20140907224347) do
+ActiveRecord::Schema.define(version: 20140920200051) do
 
   create_table "categories", force: true do |t|
     t.string   "title"
@@ -22,7 +22,7 @@ ActiveRecord::Schema.define(version: 20140907224347) do
 
   create_table "groups", force: true do |t|
     t.string   "name"
-    t.decimal  "balance",    precision: 8, scale: 2
+    t.decimal  "balance",    precision: 8, scale: 2, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -30,7 +30,7 @@ ActiveRecord::Schema.define(version: 20140907224347) do
   create_table "memberships", force: true do |t|
     t.integer  "group_id"
     t.integer  "user_id"
-    t.decimal  "balance",    precision: 8, scale: 2
+    t.decimal  "balance",    precision: 8, scale: 2, default: 0.0
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(version: 20140907224347) do
     t.integer  "quantity"
     t.decimal  "tax",         precision: 5, scale: 4
     t.boolean  "split"
-    t.decimal  "taxed_total", precision: 8, scale: 2
+    t.decimal  "taxed_total", precision: 8, scale: 2, default: 0.0
     t.integer  "receipt_id"
     t.datetime "created_at"
     t.datetime "updated_at"
@@ -52,7 +52,7 @@ ActiveRecord::Schema.define(version: 20140907224347) do
     t.date     "date"
     t.string   "title"
     t.string   "location"
-    t.decimal  "total",      precision: 8, scale: 2
+    t.decimal  "total",      precision: 8, scale: 2, default: 0.0
     t.integer  "group_id"
     t.datetime "created_at"
     t.datetime "updated_at"

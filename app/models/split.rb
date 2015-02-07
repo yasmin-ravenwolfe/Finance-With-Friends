@@ -12,8 +12,6 @@ class Split < ActiveRecord::Base
 
   # validates_exclusion_of :percentage, in: 0..0, message: "Can't assign 0% to a member."
 
-  # Update Membership balance for each member
-  # after_save :update_membership_balance
 
 
   # YTF TODO: move these methods to Purchase.rb ? They are used to validate each split but splits belong to purchase
@@ -37,7 +35,7 @@ class Split < ActiveRecord::Base
       errors.add(:percentage, "Can't assign blank to a member")
       false
     elsif membership_id == nil && percentage != nil
-      errors.add(:membership_id, "Cn't assign a percentage without choosing a member.")
+      errors.add(:membership_id, "Can't assign a percentage without choosing a member.")
       false
      end
   end

@@ -1,6 +1,6 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :set_user, only: [:show, :edit, :update, :destroy, :report]
 
   # GET /users
   # GET /users.json
@@ -63,6 +63,8 @@ class UsersController < ApplicationController
     end
   end
 
+  def report
+  end
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_user

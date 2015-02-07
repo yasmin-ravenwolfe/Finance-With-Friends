@@ -10,12 +10,14 @@ FinanceWithFriends::Application.routes.draw do
     resources :categories
     resources :receipts, shallow: true do
       resources :purchases, shallow: true do
-        resources :splits
+        resources :splits, except: :edit
       end
     end
   end
 
-  get '/users/:id/reports/overall_total', to: 'reports#overall_total', as: 'overall_total'
+  get '/users/:id/report', to: 'users#report', as: 'user_report'
+  get 'groups/:id/report', to: 'groups#report', as: 'group_report'
+  get 'groups/:id/total_by_date', to: 'groups#total_by_date', as: 'total_by_date'
 
   get '/memberships/:id', to: 'memberships#destroy', as: 'delete_membership'
 
@@ -56,7 +58,7 @@ FinanceWithFriends::Application.routes.draw do
   #       get 'recent', on: :collection
   #     end
   #   end
-  
+
   # Example resource route with concerns:
   #   concern :toggleable do
   #     post 'toggle'

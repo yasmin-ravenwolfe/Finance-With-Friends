@@ -1,26 +1,19 @@
-<!-- <p id="notice"><%= notice %></p>
-Add new receipt:
-<%#= link_to 'New Receipt', new_group_receipt_path(params[:id]) %>
+<%= javascript_include_tag "groups" %>
+<%= @group.name %>
 
-<p>Group total:
-<%= @group.balance %>
-</p>
+Group members:
+<% @users.each do |u| %>
+  <div><%= u.name %> - <%= link_to "Remove from group", delete_membership_path(member_to_delete(@group, u)), data: {confirm: "Are you sure?" }, remote: true, class: 'delete-member' %></div>
+<% end %>
 
-<ul>
-<%# @memberships.each do |m| %>
-  <li><%#= User.find(m.user_id).name %>'s balance: <%#= m.balance %></li>
-<%# end %>
-</ul>
 
-<p>Most recent receipt:
-  <%= link_to @group.receipts.last.title, receipt_path(@group.receipts.last.id) %>
-</p>
 
-<p> 
-  <%#= link_to 'See all receipts', group_receipts_path(params[:id]) %>
-</p> -->
+<div>Categories:</div>
+<% @categories.each do |c| %>
+  <div><%= c.title %> - <%= link_to "Edit title", edit_category_path(c.id) %>
+      <%= link_to "Delete", category_path(c.id), method: 'delete', remote: true, data: { confirm: 'Are you sure?'}, class: 'delete-category' %></div>
+<% end %>
 
-Put category info per group here 
+<div><%= link_to 'Add Category', new_group_category_path(@group), id: 'add-category' %></div>
 
-<%= link_to 'Edit', edit_group_path(@group) %> |
-<%= link_to 'Back', groups_path %>
+<div><%= link_to 'Back', root_path %></div>

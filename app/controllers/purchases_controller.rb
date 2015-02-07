@@ -62,15 +62,15 @@ class PurchasesController < ApplicationController
       @split.membership_id = params[:purchase][:membership_id_one_buyer]
       @split.percentage = 1
     end
-    calculate_taxed_total(@purchase)
+    # calculate_taxed_total(@purchase)
     respond_to do |format|
-      if !@purchase.save
+      if @purchase.save
+        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
+        format.json { render action: 'receipts/index', status: :created, location: @purchase }
+      else
         format.html { render action: 'new' }
         format.json { render json: @split.errors, status: :unprocessable_entity }
         format.js { }
-      else
-        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
-        format.json { render action: 'receipts/index', status: :created, location: @purchase }
       end
     end
   end
@@ -108,15 +108,15 @@ class PurchasesController < ApplicationController
       @split.membership_id = params[:purchase][:membership_id_one_buyer]
       @split.percentage = 1
     end
-    calculate_taxed_total(@purchase)
+    # calculate_taxed_total(@purchase)
     respond_to do |format|
-      if !@purchase.save
+      if @purchase.save
+        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
+        format.json { render action: 'receipts/index', status: :created, location: @purchase }
+      else
         format.html { render action: 'edit' }
         format.json { render json: @split.errors, status: :unprocessable_entity }
         format.js { }
-      else
-        format.html { redirect_to group_receipts_path(@receipt.group), notice: 'Purchase was successfully created.' }
-        format.json { render action: 'receipts/index', status: :created, location: @purchase }
       end
     end
   end
@@ -142,10 +142,10 @@ class PurchasesController < ApplicationController
       params.require(:purchase).permit(:receipt_id, purchase: [:description, :category_id, :price, :quantity, :tax, :split, :percentage, :membership_id_split, :membership_id_one_buyer, :split_attributes] )
     end
 
-    def calculate_taxed_total(purchase)
-      sub_total = purchase.price * purchase.quantity
-      total_with_tax = (purchase.tax * sub_total) + sub_total
+    # def calculate_taxed_total(purchase)
+    #   sub_total = purchase.price * purchase.quantity
+    #   total_with_tax = (purchase.tax * sub_total) + sub_total
 
-      purchase.taxed_total = total_with_tax
-    end
+    #   purchase.taxed_total = total_with_tax
+    # end
 end

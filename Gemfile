@@ -45,7 +45,11 @@ end
 # gem 'debugger', group: [:development, :test]
 
 # Twitter Bootstrap
-gem "twitter-bootstrap-rails"
+# gem "twitter-bootstrap-rails"
+
+#Use this Bootstrap gem instead
+gem 'bootstrap-sass', '~> 3.3.0'
+gem 'autoprefixer-rails'
 
 # Hirb
 gem "hirb"
@@ -55,3 +59,9 @@ gem "devise"
 
 # Guards
 gem 'guardsjs-rails'
+
+group :development, :test do
+  gem 'rspec-rails', '~> 3.0.0'
+end
+
+gem 'font-awesome-sass'
